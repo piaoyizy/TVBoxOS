@@ -86,9 +86,10 @@ public abstract class BaseActivity extends AppCompatActivity implements CustomAd
 
     @Override
     public Resources getResources() {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
-            AutoSizeCompat.autoConvertDensityOfCustomAdapt(super.getResources(), this);
-        }
+        // 已改为 dp 单位，关闭密度转换
+        // if (Looper.myLooper() == Looper.getMainLooper()) {
+        //     AutoSizeCompat.autoConvertDensityOfCustomAdapt(super.getResources(), this);
+        // }
         return super.getResources();
     }
 
