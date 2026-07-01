@@ -21,8 +21,8 @@ import com.p2p.P2PClass;
 import com.whl.quickjs.android.QuickJSLoader;
 import com.github.catvod.crawler.JsLoader;
 
-import me.jessyan.autosize.AutoSizeConfig;
-import me.jessyan.autosize.unit.Subunits;
+import me.jessyan.autosize.AutoSizeConfig;  // 注释：模拟器屏幕缩放异常，关闭AutoSize
+import me.jessyan.autosize.unit.Subunits;  // 注释：模拟器屏幕缩放异常，关闭AutoSize
 
 /**
  * @author pj567
@@ -52,10 +52,11 @@ public class App extends MultiDexApplication {
                 .addCallback(new EmptyCallback())
                 .addCallback(new LoadingCallback())
                 .commit();
-        AutoSizeConfig.getInstance().setCustomFragment(true).getUnitsManager()
-                .setSupportDP(false)
-                .setSupportSP(false)
-                .setSupportSubunits(Subunits.MM);
+        // 注释：模拟器屏幕缩放异常，关闭 AutoSize MM 自适应
+        // AutoSizeConfig.getInstance().setCustomFragment(true).getUnitsManager()
+        //         .setSupportDP(false)
+        //         .setSupportSP(false)
+        //         .setSupportSubunits(Subunits.MM);
         PlayerHelper.init();
         QuickJSLoader.init();
         FileUtils.cleanPlayerCache();
