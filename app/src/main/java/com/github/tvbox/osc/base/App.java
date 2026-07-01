@@ -52,22 +52,34 @@ public class App extends MultiDexApplication {
                 .addCallback(new EmptyCallback())
                 .addCallback(new LoadingCallback())
                 .commit();
-        // 注释：模拟器屏幕缩放异常，关闭 AutoSize MM 自适应
-        // AutoSizeConfig.getInstance().setCustomFragment(true).getUnitsManager()
-        //         .setSupportDP(false)
-        //         .setSupportSP(false)
-        //         .setSupportSubunits(Subunits.MM);
+        AutoSizeConfig.getInstance().setCustomFragment(true).getUnitsManager()
+                .setSupportDP(false)
+                .setSupportSP(false)
+                .setSupportSubunits(Subunits.MM);
         PlayerHelper.init();
         QuickJSLoader.init();
         FileUtils.cleanPlayerCache();
     }
 
     private void initParams() {
+        // 修复模拟器物理屏幕尺寸：注入真 TV 级别的 xdpi/ydpi
+        // 55寸 TV 1920x1080: 宽≈1220mm, 1920/1220*25.4≈40 dpi
+        fixDisplayMetrics();
         // Hawk
         Hawk.init(this).build();
         Hawk.put(HawkConfig.DEBUG_OPEN, false);
         if (!Hawk.contains(HawkConfig.PLAY_TYPE)) {
             Hawk.put(HawkConfig.PLAY_TYPE, 1);
+        }
+    }
+
+    private void fixDisplayMetrics() {
+        try {
+            android.util.DisplayMetrics dm = getResources().getDisplayMetrics();
+            dm.xdpi = 40f;
+            dm.ydpi = 40f;
+        } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
