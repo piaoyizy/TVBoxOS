@@ -79,12 +79,20 @@ public class JarLoader {
     }
 
     private boolean load(String key, File file) {
+        Log.i(TAG, "echo-load key=" + key + " file=" + file.getAbsolutePath() + " exists=" + file.exists() + " len=" + (file.exists() ? file.length() : -1));
         if (Thread.interrupted()) return false;
-        if (!exists(file)) return false;
-        if (loaders.containsKey(key)) return true;
+        if (!exists(file)) {
+            Log.e(TAG, "echo-load file not exists: " + file.getAbsolutePath());
+            return false;
+        }
+        if (loaders.containsKey(key)) {
+            Log.i(TAG, "echo-load already loaded: key=" + key);
+            return true;
+        }
         try {
             file.setReadOnly();
             String cachePath = jarDir().getAbsolutePath();
+            Log.i(TAG, "echo-load creating DexClassLoader: " + file.getAbsolutePath() + " cachePath=" + cachePath);
             DexClassLoader loader = new DexClassLoader(file.getAbsolutePath(), cachePath, cachePath, App.getInstance().getClassLoader());
             invokeInit(loader);
             invokeProxy(key, loader);
@@ -94,7 +102,7 @@ public class JarLoader {
             Log.i(TAG, "load success key=" + key + ", file=" + file.getAbsolutePath());
             return true;
         } catch (Throwable e) {
-            Log.i(TAG, "load error key=" + key + ", msg=" + e.getMessage());
+            Log.e(TAG, "load error key=" + key + ", msg=" + e.getMessage() + " type=" + e.getClass().getName());
             e.printStackTrace();
             return false;
         }
@@ -102,10 +110,14 @@ public class JarLoader {
 
     private void invokeInit(DexClassLoader loader) {
         try {
+            Log.i(TAG, "echo-invokeInit: loading com.github.catvod.spider.Init");
             Class<?> clz = loader.loadClass("com.github.catvod.spider.Init");
+            Log.i(TAG, "echo-invokeInit: found Init class, calling init(Context)");
             Method method = clz.getMethod("init", Context.class);
             method.invoke(null, App.getInstance());
+            Log.i(TAG, "echo-invokeInit: SUCCESS");
         } catch (Throwable e) {
+            Log.e(TAG, "echo-invokeInit: FAILED - " + e.getClass().getName() + " - " + e.getMessage());
             e.printStackTrace();
         }
     }
